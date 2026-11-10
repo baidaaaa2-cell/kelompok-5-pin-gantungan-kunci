@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard SPK Supplier (SAW)</title>
+  <meta name="description" content="Dashboard sistem pendukung keputusan pemilihan supplier dengan metode Simple Additive Weighting. Unggah data CSV atau Excel, grafik muncul otomatis.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Dashboard Sistem Pendukung Keputusan</h1>
+    <p class="sub">Pemilihan supplier dengan metode Simple Additive Weighting (SAW). Unggah data Anda, nilai preferensi dan peringkat dihitung langsung di browser.</p>
+  </header>
+
+  <section class="card" aria-labelledby="h-data">
+    <h2 id="h-data">Data</h2>
+    <div class="upload">
+      <label class="drop" id="drop" for="file">
+        <input type="file" id="file" accept=".csv,.txt,.xlsx,.xls">
+        <strong>Pilih berkas atau seret ke sini</strong>
+        <span>CSV atau Excel (.xlsx). Format kolom dijelaskan di bagian bawah halaman.</span>
+      </label>
+      <div class="side">
+        <div class="actions">
+          <button type="button" class="btn" id="btn-sample">Pakai data contoh Modul 4</button>
+          <button type="button" class="btn ghost" id="btn-tpl-xlsx">Unduh template Excel</button>
+          <button type="button" class="btn ghost" id="btn-tpl-csv">Unduh template CSV</button>
+        </div>
+        <div class="field">
+          <label for="current">Supplier saat ini</label>
+          <select id="current"></select>
+        </div>
+      </div>
+    </div>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <div id="error" class="error" role="alert" hidden></div>
+  </section>
+
+  <div id="notice" class="notice" role="note"></div>
+
+  <div id="dash">
+    <section class="kpis" id="kpis" aria-label="Ringkasan"></section>
+
+    <section class="two">
+      <div class="card">
+        <h2>Peringkat nilai preferensi (Vi)</h2>
+        <p class="finding" id="f-rank"></p>
+        <div class="chart" id="rank"></div>
+        <div class="legend" id="rank-legend" aria-label="Keterangan warna"></div>
+      </div>
+      <div class="card">
+        <h2>Bobot kriteria</h2>
+        <p class="finding" id="f-weights"></p>
+        <div class="chart" id="weights"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Dari mana nilai tiap supplier berasal</h2>
+      <p class="finding" id="f-stack"></p>
+      <div class="legend" id="stack-legend" aria-label="Keterangan warna kriteria"></div>
+      <div class="chart" id="stack"></div>
+    </section>
+
+    <section class="card">
+      <div class="head-row">
+        <div>
+          <h2>Matriks ternormalisasi dan nilai akhir</h2>
+          <p class="finding">Nilai rij tiap kriteria (0 sampai 1, makin gelap makin baik) dan Vi = jumlah bobot × rij. Urut dari peringkat tertinggi.</p>
+        </div>
+        <button type="button" class="btn ghost" id="btn-download">Unduh hasil</button>
+      </div>
+      <div class="scroll"><table id="tbl"></table></div>
+    </section>
+  </div>
+
+  <section class="card help" aria-labelledby="h-help">
+    <h2 id="h-help">Format berkas data</h2>
+    <p>Satu tabel dengan tiga bagian. Baris pertama adalah judul kolom. Baris berlabel <b>Jenis</b> dan <b>Bobot</b> menjelaskan tiap kriteria. Baris berikutnya adalah data supplier.</p>
+    <div class="scroll">
+      <table class="mini">
+        <thead><tr><th>Alternatif</th><th>Harga per set</th><th>Kualitas bahan</th><th>Pengiriman</th></tr></thead>
+        <tbody>
+          <tr><td><b>Jenis</b></td><td>Cost</td><td>Benefit</td><td>Benefit</td></tr>
+          <tr><td><b>Bobot</b></td><td>40</td><td>35</td><td>25</td></tr>
+          <tr><td>Supplier A</td><td>129000</td><td>0,75</td><td>0,75</td></tr>
+          <tr><td>Supplier B</td><td>135000</td><td>1,00</td><td>0,75</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul>
+      <li><b>Cost</b>: makin kecil makin baik (misalnya harga). <b>Benefit</b>: makin besar makin baik (misalnya kualitas).</li>
+      <li><b>Bobot</b> boleh dalam persen (total 100) atau pecahan (total 1). Jika totalnya lain, bobot dinormalkan otomatis dan Anda diberi peringatan.</li>
+      <li>Angka boleh memakai koma atau titik desimal. Harga boleh ditulis <code>129000</code> atau <code>129.000</code>.</li>
+      <li>Minimal 2 supplier dan 2 kriteria. Untuk Excel, data dibaca dari lembar pertama. CSV boleh dipisah koma, titik koma, atau tab.</li>
+      <li>Kriteria Cost tidak boleh bernilai 0. Data diproses di browser Anda dan tidak dikirim ke server mana pun.</li>
+    </ul>
+  </section>
+
+  <p class="foot">Metode: normalisasi rij = xij / max (benefit) atau min / xij (cost), lalu Vi = Σ wj × rij. Dibuat untuk Praktikum Terintegrasi II, Modul 4 Perancangan Sistem Pendukung Keputusan.</p>
+</div>
+<div id="tip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
